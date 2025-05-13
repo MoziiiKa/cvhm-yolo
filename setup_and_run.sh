@@ -19,14 +19,14 @@ if ! command -v python3 &>/dev/null; then
   echo "🚨 ERROR: Python is not installed. Please install Python 3.8+ and try again."
   exit 1
 else
-  echo "✅ Python found: $(python --version)"
+  echo "✅ Python found: $(python3 --version)"
 fi
 
 # 2) Check for virtual environment, create if necessary
 VENV_DIR="cvhm-yolo-venv"
 if [ ! -d "$VENV_DIR" ]; then
   echo "⚡️ Virtual environment not found, creating $VENV_DIR..."
-  python -m venv $VENV_DIR || { echo "Failed to create virtual env"; exit 1; }
+  python3 -m venv $VENV_DIR || { echo "Failed to create virtual env"; exit 1; }
 fi
 
 # Activate venv
@@ -73,7 +73,7 @@ SCRIPTS=(
 for script in "${SCRIPTS[@]}"; do
   echo "---------------------------------------------"
   echo "🚀 Running $script"
-  python $script || { echo "🚨 ERROR: $script failed. See log for details."; exit 1; }
+  python3 $script || { echo "🚨 ERROR: $script failed. See log for details."; exit 1; }
 done
 
 echo "---------------------------------------------"
