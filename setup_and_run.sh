@@ -15,7 +15,7 @@ echo "Timestamp: $(date)"
 echo "============================================="
 
 # 1) Check for Python
-if ! command -v python &>/dev/null; then
+if ! command -v python3 &>/dev/null; then
   echo "🚨 ERROR: Python is not installed. Please install Python 3.8+ and try again."
   exit 1
 else
