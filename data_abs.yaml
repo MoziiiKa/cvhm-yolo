@@ -1,0 +1,7 @@
+names:
+- cow
+nc: 1
+path: /home/mozi/data/data-cvhm-yolo
+test: /home/mozi/data/data-cvhm-yolo/images/test
+train: /home/mozi/data/data-cvhm-yolo/images/train
+val: /home/mozi/data/data-cvhm-yolo/images/val
