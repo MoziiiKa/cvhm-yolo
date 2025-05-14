@@ -48,8 +48,8 @@ with WorkingDirectory(PROJECT):
         imgsz=cfg['training']['imgsz'],
         batch=cfg['training']['batch_size'],
         device=device,
-        project=str(project_dir),      # root for runs/
-        name="training",               # subfolder name, e.g. ~/data/.../training
+        project=str(DATA_ROOT / "runs"),      # root for runs/
+        name="exp",               # subfolder name, e.g. ~/data/.../exp
         exist_ok=True                  # overwrite if the folder already exists
     )
     logging.info("Training complete, weights saved in runs/")
