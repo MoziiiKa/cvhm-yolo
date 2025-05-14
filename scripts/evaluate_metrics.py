@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Runs a full validation pass using YOLOv8 and extracts quantitative metrics
-(mAP@[.5:.95], precision, recall, F1) directly from the Results object.
+(mAP@[.5:.95], precision, recall, F1) directly from the DetMetrics object.
 """
 import json
 import logging
@@ -39,21 +39,23 @@ if not DATA_YAML.exists():
     logging.error(f"data.yaml missing at {DATA_YAML}")
     exit(1)
 
-# Run validation and capture metrics via the Results object
+# Run validation and capture DetMetrics object
 logging.info("Running YOLOv8 validation and capturing metrics from API…")
-results = YOLO(str(WEIGHTS)).val(
+det_metrics = YOLO(str(WEIGHTS)).val(
     data=str(DATA_YAML),
-    save_json=False  # skip JSON file creation
-)
+    save_json=False  # no JSON file creation
+)  
+# det_metrics is a DetMetrics instance
 
-# Extract metrics directly
-metrics = results.metrics  # dict with keys: 'metrics/mAP50-95', 'metrics/precision', 'metrics/recall', 'metrics/F1'
+# Extract metrics dict via results_dict property
+metrics_dict = det_metrics.results_dict  # DET metrics: precision, recall, mAP, F1 :contentReference[oaicite:1]{index=1}
+
 logging.info("Validation metrics:")
-for key, val in metrics.items():
-    logging.info(f"  {key}: {val}")
+for name, value in metrics_dict.items():
+    logging.info(f"  {name}: {value}")
 
 # Save metrics JSON for reproducibility
 val_metrics_path = ROOT / "val_metrics.json"
 with open(val_metrics_path, 'w') as f:
-    json.dump(metrics, f, indent=2)
+    json.dump(metrics_dict, f, indent=2)
 logging.info(f"Saved summary metrics to {val_metrics_path}")
