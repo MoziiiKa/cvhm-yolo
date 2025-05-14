@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Runs a full validation pass,
-saves the numeric metrics (mAP@[.5:.95],
-precision, recall, F1) to JSON, and logs them
+Runs a full validation pass using YOLOv8 and extracts quantitative metrics
+(mAP@[.5:.95], precision, recall, F1) directly from the Results object.
 """
 import json
 import logging
@@ -16,7 +15,7 @@ cfg       = json.load(open(ROOT / "config.json"))
 raw_root  = cfg["data_root"]
 DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
 
-# Logging setup
+# Setup logging to logs directory under data_root
 LOG_DIR = DATA_ROOT / cfg.get("logs_dir", "logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -28,40 +27,33 @@ logging.basicConfig(
     ]
 )
 
-# Paths to model & validation output location under data_root
-WEIGHTS      = DATA_ROOT / "runs" / "exp" / "weights" / "best.pt"
-VAL_PROJECT  = DATA_ROOT / "runs" / "val"
-VAL_RUN      = VAL_PROJECT / "exp"
-METRICS_JSON = VAL_RUN / "results.json"
+# Paths to model weights and dataset config
+WEIGHTS   = DATA_ROOT / "runs" / "exp" / "weights" / "best.pt"
+DATA_YAML = ROOT / "data.yaml"
 
-# Validate required files
+# Validate existence
 if not WEIGHTS.exists():
     logging.error(f"Model weights not found at {WEIGHTS}")
     exit(1)
-if not (ROOT / "data.yaml").exists():
-    logging.error("data.yaml missing in project root")
+if not DATA_YAML.exists():
+    logging.error(f"data.yaml missing at {DATA_YAML}")
     exit(1)
 
-# Run validation with JSON export into the data root
-logging.info("Running YOLOv8 validation with JSON export…")
-YOLO(str(WEIGHTS)).val(
-    data=str(ROOT / "data.yaml"),
-    save_json=True,
-    project=str(VAL_PROJECT),
-    name="exp",
-    exist_ok=True
+# Run validation and capture metrics via the Results object
+logging.info("Running YOLOv8 validation and capturing metrics from API…")
+results = YOLO(str(WEIGHTS)).val(
+    data=str(DATA_YAML),
+    save_json=False  # skip JSON file creation
 )
 
-# Load & log metrics
-if METRICS_JSON.exists():
-    metrics = json.loads(METRICS_JSON.read_text())
-    logging.info("Validation metrics:")
-    for k, v in metrics.items():
-        logging.info(f"  {k}: {v}")
-    # Persist a summary copy at project root
-    summary_path = ROOT / "val_metrics.json"
-    summary_path.write_text(json.dumps(metrics, indent=2))
-    logging.info(f"Saved summary JSON to {summary_path}")
-else:
-    logging.error(f"Expected metrics JSON not found at {METRICS_JSON}")
-    exit(1)
+# Extract metrics directly
+metrics = results.metrics  # dict with keys: 'metrics/mAP50-95', 'metrics/precision', 'metrics/recall', 'metrics/F1'
+logging.info("Validation metrics:")
+for key, val in metrics.items():
+    logging.info(f"  {key}: {val}")
+
+# Save metrics JSON for reproducibility
+val_metrics_path = ROOT / "val_metrics.json"
+with open(val_metrics_path, 'w') as f:
+    json.dump(metrics, f, indent=2)
+logging.info(f"Saved summary metrics to {val_metrics_path}")
