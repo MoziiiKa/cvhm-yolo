@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Runs a full validation pass using YOLOv8 and extracts quantitative metrics
-(mAP@[.5:.95], precision, recall, F1) directly from the DetMetrics object.
+(mAP@[.5:.95], precision, recall, F1) directly from the DetMetrics object,
+saving both logs and metrics JSON under the configured data root.
 """
 import json
 import logging
@@ -15,7 +16,7 @@ cfg       = json.load(open(ROOT / "config.json"))
 raw_root  = cfg["data_root"]
 DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
 
-# Setup logging to logs directory under data_root
+# Setup logging directory
 LOG_DIR = DATA_ROOT / cfg.get("logs_dir", "logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -43,19 +44,18 @@ if not DATA_YAML.exists():
 logging.info("Running YOLOv8 validation and capturing metrics from API…")
 det_metrics = YOLO(str(WEIGHTS)).val(
     data=str(DATA_YAML),
-    save_json=False  # no JSON file creation
-)  
-# det_metrics is a DetMetrics instance
+    save_json=False  # skip JSON file creation
+)
 
 # Extract metrics dict via results_dict property
-metrics_dict = det_metrics.results_dict  # DET metrics: precision, recall, mAP, F1 :contentReference[oaicite:1]{index=1}
+metrics_dict = det_metrics.results_dict  # precision, recall, mAP, F1, etc.
 
+# Log metrics
 logging.info("Validation metrics:")
 for name, value in metrics_dict.items():
     logging.info(f"  {name}: {value}")
 
-# Save metrics JSON for reproducibility
-val_metrics_path = ROOT / "val_metrics.json"
-with open(val_metrics_path, 'w') as f:
-    json.dump(metrics_dict, f, indent=2)
-logging.info(f"Saved summary metrics to {val_metrics_path}")
+# Save metrics JSON under data root logs directory
+metrics_path = LOG_DIR / "val_metrics.json"
+metrics_path.write_text(json.dumps(metrics_dict, indent=2))
+logging.info(f"Saved summary metrics to {metrics_path}")
