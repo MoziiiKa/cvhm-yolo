@@ -5,7 +5,12 @@
 #   the entire CVHM-YOLO pipeline end-to-end
 # =============================================
 
-LOG_FILE="setup_and_run.log"
+# LOG_FILE="setup_and_run.log"
+# resolve data_root from config.json
+DATA_ROOT=$(python3 -c "import os,json; c=json.load(open('config.json')); print(os.path.expanduser(os.path.expandvars(c['data_root'])))")
+LOG_DIR="$DATA_ROOT/$(python3 -c "import json; print(json.load(open('config.json'))['logs_dir'])")"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/setup_and_run.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "============================================="

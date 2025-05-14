@@ -11,7 +11,10 @@ DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
 
 # Project root & logging
 PROJECT   = Path(__file__).parent.parent
-LOG_FILE  = PROJECT / 'train.log'
+# LOG_FILE  = PROJECT / 'train.log'
+LOG_DIR   = DATA_ROOT / cfg['logs_dir']
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE  = LOG_DIR / 'train.log'
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",

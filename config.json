@@ -1,5 +1,7 @@
 {
     "data_root": "~/data/data-cvhm-yolo",
+
+    "logs_dir": "logs",
   
     "kaggle": {
       "dataset": "trainingdatapro/cows-detection-dataset",
