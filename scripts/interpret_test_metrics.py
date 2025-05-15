@@ -4,6 +4,7 @@ Interpretation of YOLOv8 test split metrics:
 Loads test_metrics.json, compares against thresholds,
 and prints a summary evaluation of model generalization.
 """
+import os
 import json
 from pathlib import Path
 
@@ -52,9 +53,12 @@ def interpret_value(metric_name, value):
     return "poor"
 
 def main():
-    root = Path(__file__).parent.parent
-    data_root = root  # adjust if you store JSON under data_root/logs
-    json_path = data_root / "logs" / "test_metrics.json"
+    ROOT      = Path(__file__).parent.parent
+    cfg       = json.load(open(ROOT / "config.json"))
+    raw_root  = cfg["data_root"]
+    DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
+    json_path = DATA_ROOT / cfg.get("logs_dir", "logs") / "test_metrics.json"
+
     if not json_path.exists():
         print(f"ERROR: {json_path} not found.")
         return
