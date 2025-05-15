@@ -17,7 +17,7 @@ DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
 
 # Load the trained model
 MODEL_PATH = DATA_ROOT / "runs/exp/weights/best.pt"
-model = YOLO(str(MODEL_PATH))  # Ultralytics API :contentReference[oaicite:0]{index=0}
+model = YOLO(str(MODEL_PATH))  # Ultralytics API
 
 app = FastAPI(title="CVHM-YOLO Inference API")
 
@@ -28,7 +28,7 @@ async def detect_image(file: UploadFile = File(...)):
     np_arr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     # Run inference
-    results = model(img)[0]  # returns a Results object :contentReference[oaicite:1]{index=1}
+    results = model(img)[0]  # returns a Results object
     # Render annotated image
     annotated = results.plot()
     _, img_encoded = cv2.imencode('.jpg', annotated)
