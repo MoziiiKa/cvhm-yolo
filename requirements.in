@@ -7,3 +7,6 @@ pyyaml
 scikit-learn
 albumentations
 opencv-python
+fastapi
+uvicorn[standard]
+opencv-python-headless

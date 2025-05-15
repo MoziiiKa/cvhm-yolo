@@ -10,6 +10,10 @@ albumentations==2.0.6
     # via -r requirements.in
 annotated-types==0.7.0
     # via pydantic
+anyio==4.9.0
+    # via
+    #   starlette
+    #   watchfiles
 attrs==25.3.0
     # via cvat-sdk
 bleach==6.2.0
@@ -24,6 +28,8 @@ charset-normalizer==3.4.2
     # via
     #   kaggle
     #   requests
+click==8.2.0
+    # via uvicorn
 contourpy==1.3.2
     # via matplotlib
 cvat-sdk==2.36.0
@@ -32,6 +38,8 @@ cycler==0.12.1
     # via
     #   matplotlib
     #   roboflow
+fastapi==0.115.12
+    # via -r requirements.in
 filelock==3.18.0
     # via torch
 filetype==1.2.0
@@ -42,8 +50,13 @@ fsspec==2025.3.2
     # via torch
 future==1.0.0
     # via tuspy
+h11==0.16.0
+    # via uvicorn
+httptools==0.6.4
+    # via uvicorn
 idna==3.7
     # via
+    #   anyio
     #   kaggle
     #   requests
     #   roboflow
@@ -127,6 +140,7 @@ opencv-python==4.11.0.86
     #   ultralytics
 opencv-python-headless==4.10.0.84
     # via
+    #   -r requirements.in
     #   albucore
     #   albumentations
     #   roboflow
@@ -157,7 +171,9 @@ psutil==7.0.0
 py-cpuinfo==9.0.0
     # via ultralytics
 pydantic==2.11.4
-    # via albumentations
+    # via
+    #   albumentations
+    #   fastapi
 pydantic-core==2.33.2
     # via pydantic
 pyparsing==3.2.3
@@ -170,7 +186,9 @@ python-dateutil==2.9.0.post0
     #   pandas
     #   roboflow
 python-dotenv==1.1.0
-    # via roboflow
+    # via
+    #   roboflow
+    #   uvicorn
 python-slugify==8.0.4
     # via kaggle
 pytz==2025.2
@@ -181,6 +199,7 @@ pyyaml==6.0.2
     #   albumentations
     #   roboflow
     #   ultralytics
+    #   uvicorn
 requests==2.32.3
     # via
     #   kaggle
@@ -209,6 +228,10 @@ six==1.17.0
     #   python-dateutil
     #   roboflow
     #   tuspy
+sniffio==1.3.1
+    # via anyio
+starlette==0.46.2
+    # via fastapi
 stringzilla==3.12.5
     # via albucore
 sympy==1.14.0
@@ -240,7 +263,9 @@ tuspy==0.2.5
     # via cvat-sdk
 typing-extensions==4.13.2
     # via
+    #   anyio
     #   cvat-sdk
+    #   fastapi
     #   pydantic
     #   pydantic-core
     #   torch
@@ -259,10 +284,18 @@ urllib3==2.4.0
     #   kaggle
     #   requests
     #   roboflow
+uvicorn[standard]==0.34.2
+    # via -r requirements.in
+uvloop==0.21.0
+    # via uvicorn
+watchfiles==1.0.5
+    # via uvicorn
 webencodings==0.5.1
     # via
     #   bleach
     #   kaggle
+websockets==15.0.1
+    # via uvicorn
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
