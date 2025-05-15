@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
 Interpretation of YOLOv8 test split metrics:
-Loads test_metrics.json, compares against thresholds,
-and prints a summary evaluation of model generalization.
+Loads test_metrics.json, normalizes metric names (strips any '(...)' suffix),
+compares against thresholds, and prints a summary evaluation of model generalization.
 """
-import os
 import json
 from pathlib import Path
+import os
 
 # --- Configuration: adjust these to your standards ---
 THRESHOLDS = {
@@ -36,12 +36,16 @@ CATEGORY_NAMES = {
     "excellent": "Excellent ✅",
     "good":      "Good 👍",
     "fair":      "Fair 🤔",
-    "poor":      "Poor ⚠️"
+    "poor":      "Poor ⚠️",
+    None:        "Unknown"
 }
 
-def interpret_value(metric_name, value):
-    """Return a category based on THRESHOLDS for this metric."""
-    thr = THRESHOLDS.get(metric_name, {})
+def interpret_value(metric_key, value):
+    """
+    Determine performance category for a metric value.
+    metric_key should be the cleaned name (without suffix).
+    """
+    thr = THRESHOLDS.get(metric_key)
     if not thr:
         return None
     if value >= thr["excellent"]:
@@ -52,23 +56,33 @@ def interpret_value(metric_name, value):
         return "fair"
     return "poor"
 
+def clean_name(name):
+    """
+    Strip any parenthetical suffix, e.g. 'metrics/precision(B)' → 'metrics/precision'
+    """
+    return name.split("(")[0]
+
 def main():
-    ROOT      = Path(__file__).parent.parent
-    cfg       = json.load(open(ROOT / "config.json"))
-    raw_root  = cfg["data_root"]
-    DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
-    json_path = DATA_ROOT / cfg.get("logs_dir", "logs") / "test_metrics.json"
-
+    project = Path(__file__).parent.parent
+    # Load data_root and logs_dir from config
+    cfg = json.load(open(project / "config.json"))
+    data_root = Path(os.path.expanduser(os.path.expandvars(cfg["data_root"])))
+    logs_dir  = data_root / cfg.get("logs_dir", "logs")
+    json_path = logs_dir / "test_metrics.json"
+    
     if not json_path.exists():
-        print(f"ERROR: {json_path} not found.")
+        print(f"ERROR: metrics file not found at {json_path}")
         return
-
+    
     metrics = json.loads(json_path.read_text())
     print("\nModel Generalization Report (Test Split)\n" + "-"*40)
-    for name, value in metrics.items():
-        category = interpret_value(name, value)
-        label = CATEGORY_NAMES.get(category, "Unknown")
-        print(f"{name:20s}: {value:.3f} → {label}")
+    
+    for raw_name, value in metrics.items():
+        base_name = clean_name(raw_name)
+        category = interpret_value(base_name, value)
+        label    = CATEGORY_NAMES[category]
+        print(f"{raw_name:25s}: {value:.3f} → {label}")
+    
     print("-"*40 + "\nInterpretation complete.\n")
 
 if __name__ == "__main__":
