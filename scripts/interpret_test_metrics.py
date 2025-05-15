@@ -10,27 +10,14 @@ import os
 
 # --- Configuration: adjust these to your standards ---
 THRESHOLDS = {
-    "metrics/mAP50-95": {
-        "excellent": 0.70,
-        "good":      0.50,
-        "fair":      0.30
-    },
-    "metrics/precision": {
-        "excellent": 0.75,
-        "good":      0.60,
-        "fair":      0.40
-    },
-    "metrics/recall": {
-        "excellent": 0.75,
-        "good":      0.60,
-        "fair":      0.40
-    },
-    "metrics/F1": {
-        "excellent": 0.75,
-        "good":      0.60,
-        "fair":      0.40
-    },
+    "metrics/mAP50-95": {"excellent": 0.70, "good": 0.50, "fair": 0.30},
+    "metrics/mAP50":    {"excellent": 0.85, "good": 0.70, "fair": 0.50},
+    "metrics/precision":{"excellent": 0.75, "good": 0.60, "fair": 0.40},
+    "metrics/recall":   {"excellent": 0.75, "good": 0.60, "fair": 0.40},
+    "metrics/F1":       {"excellent": 0.75, "good": 0.60, "fair": 0.40},
+    "fitness":          {"excellent": 0.60, "good": 0.50, "fair": 0.40},
 }
+
 
 CATEGORY_NAMES = {
     "excellent": "Excellent ✅",
