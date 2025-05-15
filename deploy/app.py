@@ -1,4 +1,5 @@
 # deploy/app.py
+import io
 import os
 from pathlib import Path
 from fastapi import FastAPI, File, UploadFile
