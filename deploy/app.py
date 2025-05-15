@@ -14,10 +14,21 @@ ROOT      = Path(__file__).parent.parent
 import json
 cfg       = json.load(open(ROOT / "config.json"))
 raw_root  = cfg["data_root"]
-DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))      
+DATA_ROOT = Path(os.path.expanduser(os.path.expandvars(raw_root)))
 
-# Load the trained model
-MODEL_PATH = DATA_ROOT / "runs/exp/weights/best.pt"
+
+# Decide model path based on ENV var
+if os.getenv("USE_EMBEDDED_MODEL") == "1":
+    # Docker build baked the weights into /app/models
+    MODEL_PATH = Path("/app/models") / "best.pt"
+else:
+    # Use the shared data_root location on your server
+    MODEL_PATH = DATA_ROOT / cfg.get("models_dir", "models") / "best.pt"
+
+# Sanity check
+if not MODEL_PATH.exists():
+    raise FileNotFoundError(f"Could not find model at {MODEL_PATH}")
+
 model = YOLO(str(MODEL_PATH))  # Ultralytics API
 
 app = FastAPI(title="CVHM-YOLO Inference API")
