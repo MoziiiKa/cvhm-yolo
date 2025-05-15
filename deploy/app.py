@@ -3,7 +3,7 @@ import io
 import os
 from pathlib import Path
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse, JSONResponse, FileResponse
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -52,4 +52,9 @@ async def detect_video(file: UploadFile = File(...)):
         res = model(frame)[0]
         out.write(res.plot())
     cap.release(); out.release()
-    return StreamingResponse(open(tmp_out, "rb"), media_type="video/mp4")
+    # return StreamingResponse(open(tmp_out, "rb"), media_type="video/mp4")
+    return FileResponse(
+        path=str(tmp_out),
+        media_type="video/mp4",
+        filename=f"out_{file.filename}"
+    )
