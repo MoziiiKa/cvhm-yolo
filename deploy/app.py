@@ -23,7 +23,7 @@ if os.getenv("USE_EMBEDDED_MODEL") == "1":
     MODEL_PATH = Path("/app/models") / "best.pt"
 else:
     # Use the shared data_root location on your server
-    MODEL_PATH = DATA_ROOT / cfg.get("models_dir", "models") / "best.pt"
+    MODEL_PATH = DATA_ROOT / "runs/exp/weights/best.pt"
 
 # Sanity check
 if not MODEL_PATH.exists():
