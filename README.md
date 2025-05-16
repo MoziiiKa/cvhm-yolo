@@ -21,7 +21,7 @@ cvhm-yolo/
 ├─ deploy/                    # Containerized inference API
 │   ├─ app.py                 # FastAPI application for real-time detection
 │   └─ Dockerfile             # Inference image build instructions
-├─ models/                    # Bundled pretrained and fine-tuned weights (Docker purpose!)
+├─ models/                    # Bundled pretrained and fine-tuned weights
 │   └─ best.pt                # Trained YOLOv8 weights for inference
 ├─ scripts/                   # End-to-end pipeline scripts
 │   ├─ download_kaggle.py     # Download Kaggle cows dataset
@@ -44,6 +44,49 @@ cvhm-yolo/
 ├─ README.md                  # This documentation
 └─ .gitignore                 # Ignore raw data, logs, venv, etc.
 ```
+
+---
+
+## 🚢 Deployment & Inference
+
+Once your model is trained and `best.pt` is in `models/`, you can run the FastAPI server locally without Docker:
+
+```bash
+# Activate your virtual environment
+source cvhm-yolo-venv/bin/activate
+
+# Launch the inference API (reload for dev)
+uvicorn deploy.app:app --host 0.0.0.0 --port 8889 --reload
+```
+
+* **Swagger UI**:  [http://127.0.0.1:8889/docs](http://127.0.0.1:8889/docs)
+* **Redoc**:       [http://127.0.0.1:8889/redoc](http://127.0.0.1:8889/redoc)
+
+### Endpoints
+
+| Method | Path             | Description                                                     |
+| ------ | ---------------- | --------------------------------------------------------------- |
+| POST   | `/detect-image/` | Upload an image (`.jpg`, `.png`) and receive an annotated JPEG. |
+| POST   | `/detect-video/` | Upload a video (`.mp4`) and receive an annotated MP4.           |
+
+### Example: Image Detection
+
+```bash
+curl -X POST "http://127.0.0.1:8889/detect-image/" \
+     -F "file=@/path/to/cow.jpg" \
+     --output out.jpg
+```
+
+### Example: Video Detection
+
+```bash
+curl -X POST "http://127.0.0.1:8889/detect-video/" \
+     -F "file=@/path/to/video.mp4" \
+     --output out.mp4
+```
+
+You can now share your Docker image or local server command with collaborators so they can immediately test real-time detections!
+
 
 ---
 
