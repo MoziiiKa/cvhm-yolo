@@ -1,5 +1,14 @@
 # CVHM-YOLO: Computer-Vision-Only Herd Monitoring System
 
+This repository implements a **Computer-Vision-Only Herd Monitoring** solution using Ultralytics' [YOLOv8](https://github.com/ultralytics/ultralytics) on CPU/GPU. It provides an end-to-end, reproducible pipeline—from data acquisition through model training to real-time inference—organized under a configurable data root (`~/data/data-cvhm-yolo/`).
+
+Key features:
+
+* **One‑command setup & run**: Automated scripts download data, prepare datasets, convert annotations, train the model, and evaluate performance.
+* **Modular configuration**: All paths, hyperparameters, and service settings live in `config.json`.
+* **Containerized inference**: A FastAPI-based inference API with Docker support, embedding trained weights for zero‑touch deployment.
+* **Comprehensive evaluation**: Scripts for quantitative validation, hold-out testing, and automated interpretation of metrics.
+
 This repository implements a **Computer-Vision-Only Herd Monitoring** prototype (similar to AIHerd) using [YOLOv8](https://github.com/ultralytics/ultralytics) on CPU/GPU. The entire pipeline—from data download, annotation conversion, dataset preparation, to model training—lives under a configurable data root (`~/data/data-cvhm-yolo/`). Everything is scripted for **one‑command reproducibility**.
 
 ---
@@ -8,19 +17,32 @@ This repository implements a **Computer-Vision-Only Herd Monitoring** prototype 
 
 ```text
 cvhm-yolo/
-├─ config.json             # Pipeline configuration (paths, splits, hyperparams)
-├─ .env                    # (Git-ignored) Roboflow API key
-├─ requirements.txt        # Pinned Python dependencies
-├─ setup_and_run.sh        # Setup & run all steps end-to-end
-├─ data.yaml               # YOLOv8 dataset config (auto-rewritten)
-├─ data_abs.yaml           # Absolute-path dataset config (auto-generated)
-├─ scripts/
-│   ├─ download_kaggle.py        # Download Kaggle Cows dataset
-│   ├─ download_roboflow.py      # Download Roboflow cow project
-│   ├─ convert_kaggle_annotations.py  # VOC XML → YOLO TXT converter
-│   ├─ prepare_dataset.py        # Split & merge Kaggle+Roboflow into train/val/test
-│   └─ train_yolo.py             # Train YOLOv8-nano on CPU/GPU with logs
-└─ setup_and_run.log       # Captured output from last run
+├─ cvhm-yolo-venv/            # Python virtual environment
+├─ deploy/                    # Containerized inference API
+│   ├─ app.py                 # FastAPI application for real-time detection
+│   └─ Dockerfile             # Inference image build instructions
+├─ models/                    # Bundled pretrained and fine-tuned weights (Docker purpose!)
+│   └─ best.pt                # Trained YOLOv8 weights for inference
+├─ scripts/                   # End-to-end pipeline scripts
+│   ├─ download_kaggle.py     # Download Kaggle cows dataset
+│   ├─ download_roboflow.py   # Download Roboflow cow detection project
+│   ├─ convert_kaggle_annotations.py  # VOC XML → YOLO .txt converter
+│   ├─ prepare_dataset.py     # Split & merge Kaggle + Roboflow data
+│   ├─ train_yolo.py          # Train YOLOv8-nano with centralized paths
+│   ├─ evaluate_metrics.py    # Validate on val split and log metrics
+│   ├─ check_plots.py         # Verify confusion matrices and PR/F1 curves
+│   ├─ test_generalization.py # Hold-out test split evaluation
+│   └─ interpret_test_metrics.py  # Automatically interpret test metrics
+├─ config.json                # Central pipeline configuration
+├─ .env                       # (Git-ignored) API keys for Kaggle & Roboflow
+├─ data.yaml                  # YOLOv8 dataset config (auto-updated)
+├─ data_abs.yaml              # Absolute-path dataset config (auto-generated)
+├─ requirements.in            # Full dependency spec (dev + prod)
+├─ requirements.txt           # Pinned dependencies for local dev
+├─ requirements-runtime.txt   # Slim dependencies for inference image
+├─ setup_and_run.sh           # One-step setup & pipeline runner
+├─ README.md                  # This documentation
+└─ .gitignore                 # Ignore raw data, logs, venv, etc.
 ```
 
 ---
@@ -40,7 +62,7 @@ cvhm-yolo/
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/MoziiiKa/cvhm-yolo.git
+   git clone https://github.com/<your-org>/cvhm-yolo.git
    cd cvhm-yolo
    ```
 

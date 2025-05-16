@@ -2,7 +2,6 @@
 ultralytics
 kaggle
 roboflow
-cvat-sdk
 pyyaml
 scikit-learn
 albumentations
